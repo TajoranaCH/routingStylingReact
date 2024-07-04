@@ -10,11 +10,20 @@ import {
   useMatch
 } from "react-router-dom"
 
-const AnecdoteList = ({ anecdotes }) => (
+const Anecdote = ({ anecdote }) => {
+  return (
+    <div>
+      <h2>{anecdote.content}</h2>
+      <div>has {anecdote.votes} votes</div>
+    </div>
+  )
+}
+
+const Anecdotes = ({ anecdotes }) => (
   <div>
     <h2>Anecdotes</h2>
     <ul>
-      {anecdotes.map(anecdote => <li key={anecdote.id} >{anecdote.content}</li>)}
+      {anecdotes.map(anecdote => <li key={anecdote.id} ><Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link></li>)}
     </ul>
   </div>
 )
@@ -119,24 +128,29 @@ const App = () => {
     setAnecdotes(anecdotes.map(a => a.id === id ? voted : a))
   }
 
+  const match = useMatch('/anecdotes/:id')
+
   const padding = {
     padding: 5
   }
 
+  const anecdote = match
+    ? anecdotes.find(a => a.id === Number(match.params.id))
+    : null
   return (
     <div>
       <h1>Software anecdotes</h1>
-      <Router>
+      
       <Link to='/create' style={padding}>create new</Link>
       <Link to='/about' style={padding}>about</Link>
       <Link to='/' style={padding}>anecdotes</Link>
-
       <Routes>
+        <Route path="/anecdotes/:id" element={<Anecdote anecdote={anecdote} />} />
         <Route path="/create" element={<CreateNew addNew={addNew} />} />
         <Route path="/about" element={<About />} />
-        <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
+        <Route path="/anecdotes" element={<Anecdotes anecdotes={anecdotes} />} />
+        <Route path="/" element={<Anecdotes anecdotes={anecdotes} />} />
       </Routes>
-      </Router>      
       <Footer />
     </div>
   )
